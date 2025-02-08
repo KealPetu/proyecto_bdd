@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <div class="container">
+    <div class="remote-container">
         <h1>Bienvenido, Remote</h1>
         <p>Solo puedes ver las réplicas de las tablas.</p>
 
@@ -17,40 +17,34 @@
             <thead>
                 <tr>
                     <th>Nombre de la Tabla</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 {% for tabla in tablas %}
                 <tr>
                     <td>{{ tabla }}</td>
+                    <td>
+                        {% if tabla in ['Paciente', 'Cita', 'Historia_Medica'] %}
+                            <a href="{{ url_for('agregar_fila_remote', tabla=tabla) }}" class="btn">Agregar</a>
+                        {% endif %}
+                        <a href="{{ url_for('remote') }}?tabla={{ tabla }}" class="btn">Ver</a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
 
-        <!-- Formulario para seleccionar una tabla -->
-        <h2>Seleccionar una tabla para ver sus datos</h2>
-        <form method="POST">
-            <select name="tabla">
-                <option value="">Seleccione una tabla</option>
-                {% for tabla in tablas %}
-                    <option value="{{ tabla }}" {% if tabla == tabla_seleccionada %} selected {% endif %}>{{ tabla }}</option>
-                {% endfor %}
-            </select>
-            <button type="submit" class="btn">Mostrar datos</button>
-        </form>
-
-        {% if tabla_seleccionada %}
-        <h2>Datos de la tabla: {{ tabla_seleccionada }}</h2>
-
-        <!-- Mostrar datos -->
+        <!-- Tabla con los datos de la tabla seleccionada -->
         {% if datos %}
+            <h2>Datos de la tabla: {{ tabla_seleccionada }}</h2>
             <table>
                 <thead>
                     <tr>
                         {% for columna in columnas %}
                             <th>{{ columna }}</th>
                         {% endfor %}
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -59,15 +53,18 @@
                             {% for valor in fila %}
                                 <td>{{ valor }}</td>
                             {% endfor %}
+                            <td>
+                                {% if tabla_seleccionada in ['Paciente', 'Cita', 'Historia_Medica'] %}
+                                    <a href="{{ url_for('actualizar_fila_remote', tabla=tabla_seleccionada, id=fila[0]) }}" class="btn">Editar</a>
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
-        {% endif %}
         {% endif %}
 
         <a href="{{ url_for('login') }}" class="btn logout-btn">Cerrar Sesión</a>
     </div>
 </body>
 </html>
-

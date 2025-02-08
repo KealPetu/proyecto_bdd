@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <div class="container">
+    <div class="master-container">
         <h1>Bienvenido, Master</h1>
         <p>Acceso completo a las operaciones CRUD.</p>
 
@@ -17,80 +17,32 @@
             <thead>
                 <tr>
                     <th>Nombre de la Tabla</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 {% for tabla in tablas %}
                 <tr>
                     <td>{{ tabla }}</td>
+                    <td>
+                        <a href="{{ url_for('agregar_fila_master', tabla=tabla) }}" class="btn">Agregar</a>
+                        <a href="{{ url_for('master') }}?tabla={{ tabla }}" class="btn">Ver</a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
 
-        <!-- Formulario para seleccionar una tabla -->
-        <h2>Seleccionar una tabla para ver sus datos</h2>
-        <form method="POST">
-            <select name="tabla">
-                <option value="">Seleccione una tabla</option>
-                {% for tabla in tablas %}
-                    <option value="{{ tabla }}" {% if tabla == tabla_seleccionada %} selected {% endif %}>{{ tabla }}</option>
-                {% endfor %}
-            </select>
-            <button type="submit" class="btn">Mostrar datos</button>
-        </form>
-
-        {% if tabla_seleccionada %}
-        <h2>Operaciones para la tabla: {{ tabla_seleccionada }}</h2>
-
-        <!-- Operaciones CRUD -->
-        <form method="POST">
-            <input type="hidden" name="tabla" value="{{ tabla_seleccionada }}">
-
-            <!-- Leer datos -->
-            <button type="submit" name="accion" value="leer" class="btn">Leer datos</button>
-
-            <!-- Insertar datos -->
-            <div class="action-form">
-                <h3>Insertar datos</h3>
-                {% if columnas %}
-                    <p>Introduce los valores para cada campo:</p>
-                    {% for columna in columnas %}
-                        <label for="valor_{{ columna }}">{{ columna }}:</label>
-                        <input type="text" name="valor_{{ columna }}" id="valor_{{ columna }}" placeholder="Valor para {{ columna }}" required><br>
-                    {% endfor %}
-                    <button type="submit" name="accion" value="insertar" class="btn">Insertar</button>
-                {% endif %}
-            </div>
-
-            <!-- Actualizar datos -->
-            <div class="action-form">
-                <h3>Actualizar datos</h3>
-                <label for="set_values">Campos a actualizar (formato: columna1 = valor1, columna2 = valor2):</label>
-                <input type="text" name="set_values" id="set_values" placeholder="Ej: nombre = 'Juan', edad = 25" required><br>
-                <label for="condition">Condición (ej: id = 1):</label>
-                <input type="text" name="condition" id="condition" placeholder="Condición" required><br>
-                <button type="submit" name="accion" value="actualizar" class="btn">Actualizar</button>
-            </div>
-
-            <!-- Eliminar datos -->
-            <div class="action-form">
-                <h3>Eliminar datos</h3>
-                <label for="condition_delete">Condición de eliminación (ej: id = 1):</label>
-                <input type="text" name="condition_delete" id="condition_delete" placeholder="Condición" required><br>
-                <button type="submit" name="accion" value="eliminar" class="btn">Eliminar</button>
-            </div>
-        </form>
-
-        <!-- Mostrar datos -->
+        <!-- Tabla con los datos de la tabla seleccionada -->
         {% if datos %}
-            <h3>Datos de la tabla: {{ tabla_seleccionada }}</h3>
+            <h2>Datos de la tabla: {{ tabla_seleccionada }}</h2>
             <table>
                 <thead>
                     <tr>
                         {% for columna in columnas %}
                             <th>{{ columna }}</th>
                         {% endfor %}
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -99,16 +51,17 @@
                             {% for valor in fila %}
                                 <td>{{ valor }}</td>
                             {% endfor %}
+                            <td>
+                                <a href="{{ url_for('actualizar_fila_master', tabla=tabla_seleccionada, id=fila[0]) }}" class="btn">Editar</a>
+                                <a href="{{ url_for('eliminar_fila_master', tabla=tabla_seleccionada, id=fila[0]) }}" class="btn">Eliminar</a>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
-        {% endif %}
         {% endif %}
 
         <a href="{{ url_for('login') }}" class="btn logout-btn">Cerrar Sesión</a>
     </div>
 </body>
 </html>
-
-
