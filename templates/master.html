@@ -43,12 +43,14 @@
         <!-- Tabla con los datos de la tabla seleccionada -->
         {% if datos %}
             <h2>Datos de la tabla: {{ tabla_seleccionada }}</h2>
+            <a href="{{ url_for('crear', tabla=tabla_seleccionada) }}" class="btn">➕ Agregar Registro</a>
             <table>
                 <thead>
                     <tr>
                         {% for columna in columnas %}
                             <th>{{ columna }}</th>
                         {% endfor %}
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -57,6 +59,12 @@
                             {% for valor in fila %}
                                 <td>{{ valor }}</td>
                             {% endfor %}
+                            <td>
+                                <a href="{{ url_for('editar', tabla=tabla_seleccionada, id=fila[0]) }}" class="btn">✏ Editar</a>
+                                <form action="{{ url_for('eliminar', tabla=tabla_seleccionada, id=fila[0]) }}" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn delete">🗑 Eliminar</button>
+                                </form>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
