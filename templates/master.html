@@ -7,12 +7,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Bienvenido, Master</h1>
-    <nav>
-        <a href="{{ url_for('paciente') }}">Pacientes</a>
-        <a href="{{ url_for('medico') }}">Médicos</a>
-        <a href="{{ url_for('cita') }}">Citas</a>
-        <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
-    </nav>
+    <div class="master-container">
+        <h1>Bienvenido, Master</h1>
+        <p>Acceso completo a las operaciones CRUD.</p>
+        <a href="{{ url_for('login') }}" class="btn logout-btn">Cerrar Sesión</a>
+    </div>
 </body>
 </html>

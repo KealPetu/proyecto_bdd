@@ -7,10 +7,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Bienvenido, Remote</h1>
-    <nav>
-        <a href="{{ url_for('ver_replicas') }}">Ver Réplicas</a>
-        <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
-    </nav>
+    <div class="remote-container">
+        <h1>Bienvenido, Remote</h1>
+        <p>Solo puedes ver las réplicas de las tablas.</p>
+        <a href="{{ url_for('login') }}" class="btn logout-btn">Cerrar Sesión</a>
+    </div>
 </body>
 </html>
