@@ -9,10 +9,10 @@
 <body>
     <div class="remote-container">
         <h1>Bienvenido, Remote</h1>
-        <p>Solo puedes ver las réplicas de las tablas y realizar operaciones CRU en tablas fragmentadas.</p>
+        <p>Solo puedes ver las réplicas de las tablas y realizar operaciones CRU en tablas fragmentadas. También puedes eliminar registros de las tablas de auditoría.</p>
 
         <!-- Lista de tablas replicadas -->
-        <h2>Tablas Replicadas</h2>
+        <h2>Tablas Replicadas (Solo Lectura)</h2>
         <table>
             <thead>
                 <tr>
@@ -29,7 +29,7 @@
         </table>
 
         <!-- Lista de tablas fragmentadas -->
-        <h2>Tablas Fragmentadas</h2>
+        <h2>Tablas Fragmentadas (CRU)</h2>
         <table>
             <thead>
                 <tr>
@@ -45,17 +45,43 @@
             </tbody>
         </table>
 
+        <!-- Lista de tablas de auditoría -->
+        <h2>Tablas de Auditoría (CRUD)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre de la Tabla</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tabla in tablas_auditoria %}
+                <tr>
+                    <td>{{ tabla }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
         <!-- Formulario para seleccionar una tabla -->
         <h2>Seleccionar una tabla para ver sus datos</h2>
         <form method="POST">
             <select name="tabla">
                 <option value="">Seleccione una tabla</option>
-                {% for tabla in tablas_replicadas %}
-                    <option value="{{ tabla }}">{{ tabla }}</option>
-                {% endfor %}
-                {% for tabla in tablas_fragmentadas %}
-                    <option value="{{ tabla }}">{{ tabla }}</option>
-                {% endfor %}
+                <optgroup label="Tablas Replicadas (Solo Lectura)">
+                    {% for tabla in tablas_replicadas %}
+                        <option value="{{ tabla }}">{{ tabla }}</option>
+                    {% endfor %}
+                </optgroup>
+                <optgroup label="Tablas Fragmentadas (CRU)">
+                    {% for tabla in tablas_fragmentadas %}
+                        <option value="{{ tabla }}">{{ tabla }}</option>
+                    {% endfor %}
+                </optgroup>
+                <optgroup label="Tablas de Auditoría (CRUD)">
+                    {% for tabla in tablas_auditoria %}
+                        <option value="{{ tabla }}">{{ tabla }}</option>
+                    {% endfor %}
+                </optgroup>
             </select>
             <button type="submit" class="btn btn-primary">Mostrar datos</button>
         </form>
@@ -72,7 +98,7 @@
                         {% for columna in columnas %}
                             <th>{{ columna }}</th>
                         {% endfor %}
-                        {% if tabla_seleccionada in tablas_fragmentadas %}
+                        {% if tabla_seleccionada in tablas_fragmentadas or tabla_seleccionada in tablas_auditoria %}
                             <th>Acciones</th>
                         {% endif %}
                     </tr>
@@ -86,6 +112,12 @@
                             {% if tabla_seleccionada in tablas_fragmentadas %}
                                 <td>
                                     <a href="{{ url_for('remote_editar', tabla=tabla_seleccionada, id=fila[0]) }}" class="btn btn-primary">✏ Editar</a>
+                                </td>
+                            {% elif tabla_seleccionada in tablas_auditoria %}
+                                <td>
+                                    <form action="{{ url_for('remote_eliminar', tabla=tabla_seleccionada, id=fila[0]) }}" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn delete btn-danger">🗑 Eliminar</button>
+                                    </form>
                                 </td>
                             {% endif %}
                         </tr>

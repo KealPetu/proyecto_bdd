@@ -9,10 +9,10 @@
 <body>
     <div class="master-container">
         <h1>Bienvenido, Master</h1>
-        <p>Acceso completo a las operaciones CRUD.</p>
+        <p>Acceso completo a las operaciones CRUD en tablas normales. Solo eliminación en tablas de auditoría.</p>
 
-        <!-- Lista de tablas disponibles -->
-        <h2>Tablas disponibles</h2>
+        <!-- Lista de tablas normales -->
+        <h2>Tablas Normales (CRUD completo)</h2>
         <table>
             <thead>
                 <tr>
@@ -20,7 +20,24 @@
                 </tr>
             </thead>
             <tbody>
-                {% for tabla in tablas %}
+                {% for tabla in tablas_normales %}
+                <tr>
+                    <td>{{ tabla }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Lista de tablas de auditoría -->
+        <h2>Tablas de Auditoría (Solo Eliminación)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre de la Tabla</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tabla in tablas_auditoria %}
                 <tr>
                     <td>{{ tabla }}</td>
                 </tr>
@@ -33,9 +50,16 @@
         <form method="POST">
             <select name="tabla">
                 <option value="">Seleccione una tabla</option>
-                {% for tabla in tablas %}
-                    <option value="{{ tabla }}">{{ tabla }}</option>
-                {% endfor %}
+                <optgroup label="Tablas Normales (CRUD completo)">
+                    {% for tabla in tablas_normales %}
+                        <option value="{{ tabla }}">{{ tabla }}</option>
+                    {% endfor %}
+                </optgroup>
+                <optgroup label="Tablas de Auditoría (Solo Eliminación)">
+                    {% for tabla in tablas_auditoria %}
+                        <option value="{{ tabla }}">{{ tabla }}</option>
+                    {% endfor %}
+                </optgroup>
             </select>
             <button type="submit" class="btn btn-primary">Mostrar datos</button>
         </form>
@@ -43,7 +67,9 @@
         <!-- Tabla con los datos de la tabla seleccionada -->
         {% if datos %}
             <h2>Datos de la tabla: {{ tabla_seleccionada }}</h2>
-            <a href="{{ url_for('crear', tabla=tabla_seleccionada) }}" class="btn btn-primary">➕ Agregar Registro</a>
+            {% if tabla_seleccionada in tablas_normales %}
+                <a href="{{ url_for('crear', tabla=tabla_seleccionada) }}" class="btn btn-primary">➕ Agregar Registro</a>
+            {% endif %}
             <table>
                 <thead>
                     <tr>
@@ -60,9 +86,11 @@
                                 <td>{{ valor }}</td>
                             {% endfor %}
                             <td>
-                                <a href="{{ url_for('editar', tabla=tabla_seleccionada, id=fila[0]) }}" class="btn btn-primary">✏ Editar</a>
+                                {% if tabla_seleccionada in tablas_normales %}
+                                    <a href="{{ url_for('editar', tabla=tabla_seleccionada, id=fila[0]) }}" class="btn btn-primary">✏ Editar</a>
+                                {% endif %}
                                 <form action="{{ url_for('eliminar', tabla=tabla_seleccionada, id=fila[0]) }}" method="POST" style="display:inline;">
-                                    <button type="submit" class="btn delete btn-primary">🗑 Eliminar</button>
+                                    <button type="submit" class="btn delete btn-danger">🗑 Eliminar</button>
                                 </form>
                             </td>
                         </tr>

@@ -35,8 +35,22 @@ def master():
     connection = conectar_master()
     if connection:
         cursor = connection.cursor()
-        cursor.execute("SELECT table_name FROM user_tables WHERE table_name NOT LIKE 'AUDITORIA_%'")
-        tablas = [row[0] for row in cursor.fetchall()]
+        
+        # Obtener tablas normales (excluyendo las de auditoría)
+        cursor.execute("""
+            SELECT table_name 
+            FROM user_tables 
+            WHERE table_name NOT LIKE 'AUDITORIA_%'
+        """)
+        tablas_normales = [row[0] for row in cursor.fetchall()]
+
+        # Obtener tablas de auditoría
+        cursor.execute("""
+            SELECT table_name 
+            FROM user_tables 
+            WHERE table_name LIKE 'AUDITORIA_%'
+        """)
+        tablas_auditoria = [row[0] for row in cursor.fetchall()]
 
         datos = None
         columnas = None
@@ -46,13 +60,17 @@ def master():
             tabla_seleccionada = request.form.get('tabla')
             if tabla_seleccionada:
                 cursor.execute(f"SELECT * FROM {tabla_seleccionada}")
-                columnas = [desc[0] for desc in cursor.description]  
+                columnas = [desc[0] for desc in cursor.description]
                 datos = cursor.fetchall()
 
         cursor.close()
         connection.close()
-        return render_template('master.html', tablas=tablas, datos=datos, columnas=columnas, tabla_seleccionada=tabla_seleccionada)
-    
+        return render_template('master.html', 
+                             tablas_normales=tablas_normales,
+                             tablas_auditoria=tablas_auditoria,
+                             datos=datos, 
+                             columnas=columnas, 
+                             tabla_seleccionada=tabla_seleccionada)
     else:
         flash("Error: No se pudo conectar a la base de datos master.", "error")
         return redirect(url_for('login'))
@@ -60,6 +78,10 @@ def master():
 # Ruta para crear un nuevo registro
 @app.route('/crear/<tabla>', methods=['GET', 'POST'])
 def crear(tabla):
+    if tabla.startswith('AUDITORIA_'):
+        flash("Error: No se pueden crear registros en las tablas de auditoría.", "error")
+        return redirect(url_for('master'))
+    
     connection = conectar_master()
     if not connection:
         flash("Error al conectar con la base de datos.", "error")
@@ -82,6 +104,7 @@ def crear(tabla):
     connection.close()
     return render_template('crear.html', tabla=tabla, columnas=columnas)
 
+
 # Ruta para eliminar un registro
 @app.route('/eliminar/<tabla>/<id>', methods=['POST'])
 def eliminar(tabla, id):
@@ -103,13 +126,17 @@ def eliminar(tabla, id):
 # Ruta para editar un registro
 @app.route('/editar/<tabla>/<id>', methods=['GET', 'POST'])
 def editar(tabla, id):
+    if tabla.startswith('AUDITORIA_'):
+        flash("Error: No se pueden editar registros en las tablas de auditoría.", "error")
+        return redirect(url_for('master'))
+    
     connection = conectar_master()
     if not connection:
         flash("Error al conectar con la base de datos.", "error")
         return redirect(url_for('master'))
 
     cursor = connection.cursor()
-    id_col = obtener_columna_id(tabla, cursor)  
+    id_col = obtener_columna_id(tabla, cursor)
     cursor.execute(f"SELECT * FROM {tabla} WHERE {id_col} = :1", (id,))
     registro = cursor.fetchone()
     cursor.execute(f"SELECT column_name FROM user_tab_columns WHERE table_name = '{tabla}'")
@@ -134,16 +161,29 @@ def obtener_columna_id(tabla, cursor):
     return cursor.fetchone()[0]
 
 # Ruta para el modo Remote
+# Modify the remote route to include audit tables
 @app.route('/remote', methods=['GET', 'POST'])
 def remote():
     connection = conectar_remote()
     if connection:
         cursor = connection.cursor()
-        cursor.execute("SELECT table_name FROM user_tables WHERE table_name LIKE '%_Replica'")
+        
+        # Get replicated tables
+        cursor.execute("SELECT table_name FROM user_tables WHERE table_name LIKE '%_REPLICA'")
         tablas_replicadas = [row[0] for row in cursor.fetchall()]
 
-        cursor.execute("SELECT table_name FROM user_tables WHERE table_name NOT LIKE '%_Replica' AND table_name NOT LIKE 'AUDITORIA_%'")
+        # Get fragmented tables (excluding audit tables)
+        cursor.execute("""
+            SELECT table_name 
+            FROM user_tables 
+            WHERE table_name NOT LIKE '%_REPLICA' 
+            AND table_name NOT LIKE 'AUDITORIA_%'
+        """)
         tablas_fragmentadas = [row[0] for row in cursor.fetchall()]
+
+        # Get audit tables
+        cursor.execute("SELECT table_name FROM user_tables WHERE table_name LIKE 'AUDITORIA_%'")
+        tablas_auditoria = [row[0] for row in cursor.fetchall()]
 
         datos = None
         columnas = None
@@ -158,7 +198,13 @@ def remote():
 
         cursor.close()
         connection.close()
-        return render_template('remote.html', tablas_replicadas=tablas_replicadas, tablas_fragmentadas=tablas_fragmentadas, datos=datos, columnas=columnas, tabla_seleccionada=tabla_seleccionada)
+        return render_template('remote.html', 
+                             tablas_replicadas=tablas_replicadas, 
+                             tablas_fragmentadas=tablas_fragmentadas,
+                             tablas_auditoria=tablas_auditoria,
+                             datos=datos, 
+                             columnas=columnas, 
+                             tabla_seleccionada=tabla_seleccionada)
     
     else:
         flash("Error: No se pudo conectar a la base de datos remota.", "error")
@@ -220,6 +266,11 @@ def remote_editar(tabla, id):
 # Ruta para eliminar un registro en Remote (solo tablas de auditoría)
 @app.route('/remote/eliminar/<tabla>/<id>', methods=['POST'])
 def remote_eliminar(tabla, id):
+    # Check if the table is an audit table
+    if not tabla.startswith('AUDITORIA_'):
+        flash("Error: Solo se pueden eliminar registros de las tablas de auditoría.", "error")
+        return redirect(url_for('remote'))
+
     connection = conectar_remote()
     if not connection:
         flash("Error al conectar con la base de datos.", "error")
