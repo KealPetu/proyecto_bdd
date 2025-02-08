@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <div class="master-container">
+    <div class="container">
         <h1>Bienvenido, Master</h1>
         <p>Acceso completo a las operaciones CRUD.</p>
 
@@ -29,48 +29,62 @@
         </table>
 
         <!-- Formulario para seleccionar una tabla -->
-        <h2>Seleccionar una tabla para realizar operaciones CRUD</h2>
+        <h2>Seleccionar una tabla para ver sus datos</h2>
         <form method="POST">
             <select name="tabla">
                 <option value="">Seleccione una tabla</option>
                 {% for tabla in tablas %}
-                    <option value="{{ tabla }}">{{ tabla }}</option>
+                    <option value="{{ tabla }}" {% if tabla == tabla_seleccionada %} selected {% endif %}>{{ tabla }}</option>
                 {% endfor %}
             </select>
-            <select name="accion">
-                <option value="leer">Leer</option>
-                <option value="insertar">Insertar</option>
-                <option value="actualizar">Actualizar</option>
-                <option value="eliminar">Eliminar</option>
-            </select>
-            <button type="submit" class="btn">Ejecutar</button>
+            <button type="submit" class="btn">Mostrar datos</button>
         </form>
 
-        <!-- Formulario para ingresar valores para insertar o actualizar -->
         {% if tabla_seleccionada %}
-            <h3>Operación en la tabla: {{ tabla_seleccionada }}</h3>
-            {% if accion == 'insertar' %}
-                <form method="POST">
-                    <input type="text" name="valores" placeholder="Valores para insertar" required>
-                    <button type="submit" class="btn">Insertar</button>
-                </form>
-            {% elif accion == 'actualizar' %}
-                <form method="POST">
-                    <input type="text" name="set_values" placeholder="Valores para actualizar" required>
-                    <input type="text" name="condition" placeholder="Condición WHERE" required>
-                    <button type="submit" class="btn">Actualizar</button>
-                </form>
-            {% elif accion == 'eliminar' %}
-                <form method="POST">
-                    <input type="text" name="condition" placeholder="Condición WHERE" required>
-                    <button type="submit" class="btn">Eliminar</button>
-                </form>
-            {% endif %}
-        {% endif %}
+        <h2>Operaciones para la tabla: {{ tabla_seleccionada }}</h2>
 
-        <!-- Mostrar datos de la tabla seleccionada -->
+        <!-- Operaciones CRUD -->
+        <form method="POST">
+            <input type="hidden" name="tabla" value="{{ tabla_seleccionada }}">
+
+            <!-- Leer datos -->
+            <button type="submit" name="accion" value="leer" class="btn">Leer datos</button>
+
+            <!-- Insertar datos -->
+            <div class="action-form">
+                <h3>Insertar datos</h3>
+                {% if columnas %}
+                    <p>Introduce los valores para cada campo:</p>
+                    {% for columna in columnas %}
+                        <label for="valor_{{ columna }}">{{ columna }}:</label>
+                        <input type="text" name="valor_{{ columna }}" id="valor_{{ columna }}" placeholder="Valor para {{ columna }}" required><br>
+                    {% endfor %}
+                    <button type="submit" name="accion" value="insertar" class="btn">Insertar</button>
+                {% endif %}
+            </div>
+
+            <!-- Actualizar datos -->
+            <div class="action-form">
+                <h3>Actualizar datos</h3>
+                <label for="set_values">Campos a actualizar (formato: columna1 = valor1, columna2 = valor2):</label>
+                <input type="text" name="set_values" id="set_values" placeholder="Ej: nombre = 'Juan', edad = 25" required><br>
+                <label for="condition">Condición (ej: id = 1):</label>
+                <input type="text" name="condition" id="condition" placeholder="Condición" required><br>
+                <button type="submit" name="accion" value="actualizar" class="btn">Actualizar</button>
+            </div>
+
+            <!-- Eliminar datos -->
+            <div class="action-form">
+                <h3>Eliminar datos</h3>
+                <label for="condition_delete">Condición de eliminación (ej: id = 1):</label>
+                <input type="text" name="condition_delete" id="condition_delete" placeholder="Condición" required><br>
+                <button type="submit" name="accion" value="eliminar" class="btn">Eliminar</button>
+            </div>
+        </form>
+
+        <!-- Mostrar datos -->
         {% if datos %}
-            <h2>Datos de la tabla: {{ tabla_seleccionada }}</h2>
+            <h3>Datos de la tabla: {{ tabla_seleccionada }}</h3>
             <table>
                 <thead>
                     <tr>
@@ -90,9 +104,11 @@
                 </tbody>
             </table>
         {% endif %}
+        {% endif %}
 
         <a href="{{ url_for('login') }}" class="btn logout-btn">Cerrar Sesión</a>
     </div>
 </body>
 </html>
+
 

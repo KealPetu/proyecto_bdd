@@ -7,11 +7,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <div class="remote-container">
+    <div class="container">
         <h1>Bienvenido, Remote</h1>
-        <p>Acceso limitado a las operaciones:</p>
-        <p>- Puedes ver las réplicas de las tablas.</p>
-        <p>- Puedes realizar operaciones CRU en tablas fragmentadas.</p>
+        <p>Solo puedes ver las réplicas de las tablas.</p>
 
         <!-- Lista de tablas disponibles -->
         <h2>Tablas disponibles</h2>
@@ -31,44 +29,22 @@
         </table>
 
         <!-- Formulario para seleccionar una tabla -->
-        <h2>Seleccionar una tabla para realizar operaciones</h2>
+        <h2>Seleccionar una tabla para ver sus datos</h2>
         <form method="POST">
             <select name="tabla">
                 <option value="">Seleccione una tabla</option>
                 {% for tabla in tablas %}
-                    <option value="{{ tabla }}">{{ tabla }}</option>
+                    <option value="{{ tabla }}" {% if tabla == tabla_seleccionada %} selected {% endif %}>{{ tabla }}</option>
                 {% endfor %}
             </select>
-            <select name="accion">
-                <option value="leer">Leer</option>
-                {% if "FRAGMENTADA_" in tabla %}
-                    <option value="insertar">Insertar</option>
-                    <option value="actualizar">Actualizar</option>
-                {% endif %}
-            </select>
-            <button type="submit" class="btn">Ejecutar</button>
+            <button type="submit" class="btn">Mostrar datos</button>
         </form>
 
-        <!-- Formulario para ingresar valores para insertar o actualizar -->
         {% if tabla_seleccionada %}
-            <h3>Operación en la tabla: {{ tabla_seleccionada }}</h3>
-            {% if accion == 'insertar' %}
-                <form method="POST">
-                    <input type="text" name="valores" placeholder="Valores para insertar" required>
-                    <button type="submit" class="btn">Insertar</button>
-                </form>
-            {% elif accion == 'actualizar' %}
-                <form method="POST">
-                    <input type="text" name="set_values" placeholder="Valores para actualizar" required>
-                    <input type="text" name="condition" placeholder="Condición WHERE" required>
-                    <button type="submit" class="btn">Actualizar</button>
-                </form>
-            {% endif %}
-        {% endif %}
+        <h2>Datos de la tabla: {{ tabla_seleccionada }}</h2>
 
-        <!-- Mostrar datos de la tabla seleccionada -->
+        <!-- Mostrar datos -->
         {% if datos %}
-            <h2>Datos de la tabla: {{ tabla_seleccionada }}</h2>
             <table>
                 <thead>
                     <tr>
@@ -88,8 +64,10 @@
                 </tbody>
             </table>
         {% endif %}
+        {% endif %}
 
         <a href="{{ url_for('login') }}" class="btn logout-btn">Cerrar Sesión</a>
     </div>
 </body>
 </html>
+
