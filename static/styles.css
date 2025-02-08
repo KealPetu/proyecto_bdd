@@ -77,9 +77,16 @@ p {
     border: 1px solid #c62828;
 }
 
-
-/*
-Estilo para el master*/
+/* Estilos para el master y remote */
+.master-container, .remote-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 1200px;
+    margin: 20px auto;
+}
 
 table {
     width: 100%;
@@ -100,4 +107,138 @@ th {
 
 tr:nth-child(even) {
     background-color: #f2f2f2;
+}
+
+.crear-container, .editar-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 50%;
+    margin: 20px auto;
+}
+
+.crear-container h1, .editar-container h1 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.crear-container form, .editar-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.crear-container label, .editar-container label {
+    font-weight: bold;
+}
+
+.crear-container input, .editar-container input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.crear-container button, .editar-container button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+    transition: background-color 0.3s ease;
+    background-color: #4CAF50;
+}
+
+.crear-container button:hover, .editar-container button:hover {
+    background-color: #45a049;
+}
+
+.logout-btn {
+    background-color: #f44336; /* Rojo */
+}
+
+.logout-btn:hover {
+    background-color: #d32f2f;
+}
+
+/* New Button Styles */
+.btn-primary {
+    background-color: #007BFF; /* Azul más oscuro */
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-success {
+    background-color: #28a745; /* Verde más oscuro */
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.btn-warning {
+    background-color: #ffc107; /* Amarillo */
+    color: black;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-danger {
+    background-color: #dc3545; /* Rojo más oscuro */
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-info {
+    background-color: #17a2b8; /* Azul claro */
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+}
+
+.btn-secondary {
+    background-color: #6c757d; /* Gris */
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Apply new button styles to existing buttons */
+.master-btn {
+    background-color: #28a745; /* Green */
+}
+
+.master-btn:hover {
+    background-color: #218838;
+}
+
+.remote-btn {
+    background-color: #007BFF; /* Blue */
+}
+
+.remote-btn:hover {
+    background-color: #0056b3;
+}
+
+.logout-btn {
+    background-color: #dc3545; /* Red */
+}
+
+.logout-btn:hover {
+    background-color: #c82333;
 }

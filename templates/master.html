@@ -37,13 +37,13 @@
                     <option value="{{ tabla }}">{{ tabla }}</option>
                 {% endfor %}
             </select>
-            <button type="submit" class="btn">Mostrar datos</button>
+            <button type="submit" class="btn btn-primary">Mostrar datos</button>
         </form>
 
         <!-- Tabla con los datos de la tabla seleccionada -->
         {% if datos %}
             <h2>Datos de la tabla: {{ tabla_seleccionada }}</h2>
-            <a href="{{ url_for('crear', tabla=tabla_seleccionada) }}" class="btn">➕ Agregar Registro</a>
+            <a href="{{ url_for('crear', tabla=tabla_seleccionada) }}" class="btn btn-primary">➕ Agregar Registro</a>
             <table>
                 <thead>
                     <tr>
@@ -60,9 +60,9 @@
                                 <td>{{ valor }}</td>
                             {% endfor %}
                             <td>
-                                <a href="{{ url_for('editar', tabla=tabla_seleccionada, id=fila[0]) }}" class="btn">✏ Editar</a>
+                                <a href="{{ url_for('editar', tabla=tabla_seleccionada, id=fila[0]) }}" class="btn btn-primary">✏ Editar</a>
                                 <form action="{{ url_for('eliminar', tabla=tabla_seleccionada, id=fila[0]) }}" method="POST" style="display:inline;">
-                                    <button type="submit" class="btn delete">🗑 Eliminar</button>
+                                    <button type="submit" class="btn delete btn-primary">🗑 Eliminar</button>
                                 </form>
                             </td>
                         </tr>

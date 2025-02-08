@@ -57,14 +57,14 @@
                     <option value="{{ tabla }}">{{ tabla }}</option>
                 {% endfor %}
             </select>
-            <button type="submit" class="btn">Mostrar datos</button>
+            <button type="submit" class="btn btn-primary">Mostrar datos</button>
         </form>
 
         <!-- Tabla con los datos de la tabla seleccionada -->
         {% if datos %}
             <h2>Datos de la tabla: {{ tabla_seleccionada }}</h2>
             {% if tabla_seleccionada in tablas_fragmentadas %}
-                <a href="{{ url_for('remote_crear', tabla=tabla_seleccionada) }}" class="btn">➕ Agregar Registro</a>
+                <a href="{{ url_for('remote_crear', tabla=tabla_seleccionada) }}" class="btn btn-primary">➕ Agregar Registro</a>
             {% endif %}
             <table>
                 <thead>
@@ -85,7 +85,7 @@
                             {% endfor %}
                             {% if tabla_seleccionada in tablas_fragmentadas %}
                                 <td>
-                                    <a href="{{ url_for('remote_editar', tabla=tabla_seleccionada, id=fila[0]) }}" class="btn">✏ Editar</a>
+                                    <a href="{{ url_for('remote_editar', tabla=tabla_seleccionada, id=fila[0]) }}" class="btn btn-primary">✏ Editar</a>
                                 </td>
                             {% endif %}
                         </tr>
