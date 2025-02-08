@@ -9,7 +9,91 @@
 <body>
     <div class="remote-container">
         <h1>Bienvenido, Remote</h1>
-        <p>Solo puedes ver las réplicas de las tablas.</p>
+        <p>Solo puedes ver las réplicas de las tablas y realizar operaciones CRU en tablas fragmentadas.</p>
+
+        <!-- Lista de tablas replicadas -->
+        <h2>Tablas Replicadas</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre de la Tabla</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tabla in tablas_replicadas %}
+                <tr>
+                    <td>{{ tabla }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Lista de tablas fragmentadas -->
+        <h2>Tablas Fragmentadas</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre de la Tabla</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tabla in tablas_fragmentadas %}
+                <tr>
+                    <td>{{ tabla }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Formulario para seleccionar una tabla -->
+        <h2>Seleccionar una tabla para ver sus datos</h2>
+        <form method="POST">
+            <select name="tabla">
+                <option value="">Seleccione una tabla</option>
+                {% for tabla in tablas_replicadas %}
+                    <option value="{{ tabla }}">{{ tabla }}</option>
+                {% endfor %}
+                {% for tabla in tablas_fragmentadas %}
+                    <option value="{{ tabla }}">{{ tabla }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn">Mostrar datos</button>
+        </form>
+
+        <!-- Tabla con los datos de la tabla seleccionada -->
+        {% if datos %}
+            <h2>Datos de la tabla: {{ tabla_seleccionada }}</h2>
+            {% if tabla_seleccionada in tablas_fragmentadas %}
+                <a href="{{ url_for('remote_crear', tabla=tabla_seleccionada) }}" class="btn">➕ Agregar Registro</a>
+            {% endif %}
+            <table>
+                <thead>
+                    <tr>
+                        {% for columna in columnas %}
+                            <th>{{ columna }}</th>
+                        {% endfor %}
+                        {% if tabla_seleccionada in tablas_fragmentadas %}
+                            <th>Acciones</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fila in datos %}
+                        <tr>
+                            {% for valor in fila %}
+                                <td>{{ valor }}</td>
+                            {% endfor %}
+                            {% if tabla_seleccionada in tablas_fragmentadas %}
+                                <td>
+                                    <a href="{{ url_for('remote_editar', tabla=tabla_seleccionada, id=fila[0]) }}" class="btn">✏ Editar</a>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
         <a href="{{ url_for('login') }}" class="btn logout-btn">Cerrar Sesión</a>
     </div>
 </body>
