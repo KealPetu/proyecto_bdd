@@ -10,6 +10,59 @@
     <div class="master-container">
         <h1>Bienvenido, Master</h1>
         <p>Acceso completo a las operaciones CRUD.</p>
+
+        <!-- Lista de tablas disponibles -->
+        <h2>Tablas disponibles</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre de la Tabla</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tabla in tablas %}
+                <tr>
+                    <td>{{ tabla }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Formulario para seleccionar una tabla -->
+        <h2>Seleccionar una tabla para ver sus datos</h2>
+        <form method="POST">
+            <select name="tabla">
+                <option value="">Seleccione una tabla</option>
+                {% for tabla in tablas %}
+                    <option value="{{ tabla }}">{{ tabla }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn">Mostrar datos</button>
+        </form>
+
+        <!-- Tabla con los datos de la tabla seleccionada -->
+        {% if datos %}
+            <h2>Datos de la tabla: {{ tabla_seleccionada }}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        {% for columna in columnas %}
+                            <th>{{ columna }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fila in datos %}
+                        <tr>
+                            {% for valor in fila %}
+                                <td>{{ valor }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
         <a href="{{ url_for('login') }}" class="btn logout-btn">Cerrar Sesión</a>
     </div>
 </body>
